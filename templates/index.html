@@ -558,7 +558,7 @@
 
             <div>
                 <label for="modalQuantidade" style="display:block; margin-bottom:8px; font-size:13px; color:var(--text-muted);">Quantidade para lançar</label>
-                <input type="number" id="modalQuantidade" value="1" step="1">
+                <input type="text" id="modalQuantidade" value="1" inputmode="numeric" placeholder="Ex.: 1 ou -1">
             </div>
 
             <div class="modal-actions">
@@ -674,7 +674,8 @@ async function consultarAntesDeBipar(codigoLido) {
 async function confirmarBipagem() {
     if (!produtoSelecionado) return;
 
-    const qtd = parseInt(document.getElementById("modalQuantidade").value, 10);
+    const valorQtd = document.getElementById("modalQuantidade").value.trim().replace(",", ".");
+    const qtd = parseInt(valorQtd, 10);
 
     if (isNaN(qtd) || qtd === 0) {
         mostrarToast("Informe uma quantidade válida diferente de zero.", "erro");
@@ -804,6 +805,23 @@ document.getElementById('modalQuantidade').addEventListener('keydown', function(
         confirmarBipagem();
     }
 });
+
+document.getElementById('modalQuantidade').addEventListener('input', function() {
+    let valor = this.value;
+
+    valor = valor.replace(/[^\d-]/g, '');
+
+    if ((valor.match(/-/g) || []).length > 1) {
+        valor = valor.replace(/-+/g, '-');
+    }
+
+    if (valor.includes('-') && !valor.startsWith('-')) {
+        valor = '-' + valor.replace(/-/g, '');
+    }
+
+    this.value = valor;
+});
+
 </script>
 </body>
 </html>
