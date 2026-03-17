@@ -425,7 +425,7 @@
     <header class="header">
         <div class="header-inner">
             <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-                <span style="font-weight:800; font-size:18px; letter-spacing:-0.5px;">CHECK<span style="color:var(--accent)">PRO</span></span>
+                <span style="font-weight:800; font-size:18px; letter-spacing:-0.5px;">Totus<span style="color:var(--accent)">One</span></span>
                 <span class="loja-tag">{{ nome_loja | capitalize }}</span>
             </div>
             <a href="/login" style="color:var(--text-muted); text-decoration:none; font-size:14px;">Sair</a>
@@ -558,7 +558,7 @@
 
             <div>
                 <label for="modalQuantidade" style="display:block; margin-bottom:8px; font-size:13px; color:var(--text-muted);">Quantidade para lançar</label>
-                <input type="text" id="modalQuantidade" value="1" inputmode="numeric" placeholder="Ex.: 1 ou -1">
+                <input type="text" id="modalQuantidade" value="1" placeholder="Ex.: 1 ou -1" autocomplete="off">
             </div>
 
             <div class="modal-actions">
@@ -624,7 +624,7 @@ function abrirModalProduto(produto) {
     document.getElementById("modalReferencia").textContent = produto.produto || "-";
     document.getElementById("modalEsperada").textContent = produto.quant_esperada ?? 0;
     document.getElementById("modalConferida").textContent = produto.quant_conferida ?? 0;
-    document.getElementById("modalQuantidade").value = 1;
+    document.getElementById("modalQuantidade").value = "1";
 
     document.getElementById("modalProduto").style.display = "flex";
 
@@ -674,7 +674,7 @@ async function consultarAntesDeBipar(codigoLido) {
 async function confirmarBipagem() {
     if (!produtoSelecionado) return;
 
-    const valorQtd = document.getElementById("modalQuantidade").value.trim().replace(",", ".");
+    const valorQtd = document.getElementById("modalQuantidade").value.trim();
     const qtd = parseInt(valorQtd, 10);
 
     if (isNaN(qtd) || qtd === 0) {
