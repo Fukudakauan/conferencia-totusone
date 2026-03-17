@@ -562,12 +562,12 @@ def bipar():
     entrada_raw = str(data.get('codigo') or data.get('entrada') or '').strip()
 
     try:
-        quantidade = int(data.get('quantidade', 1) or 1)
+        quantidade = int(data.get('quantidade', 1))
     except:
-        quantidade = 1
-
-    if quantidade <= 0:
         return jsonify({'status': 'erro', 'mensagem': 'Quantidade inválida.'})
+
+    if quantidade == 0:
+        return jsonify({'status': 'erro', 'mensagem': 'Quantidade não pode ser zero.'})
 
     entrada_num = _resub(r'\D', '', entrada_raw)
     entrada_txt = entrada_raw
@@ -600,12 +600,21 @@ def bipar():
         return jsonify({'status': 'erro', 'mensagem': 'Produto não encontrado!'})
 
     codigo_pk = row[0]
+    nova_qtd = row[3] + quantidade
 
+    if nova_qtd < 0:
+        c.close()
+        conn.close()
+        return jsonify({
+            'status': 'erro',
+            'mensagem': 'Não é possível diminuir abaixo de zero.'
+        })
+    
     c.execute(f"""
         UPDATE produtos
-        SET quant_conferida = quant_conferida + {P}
-        WHERE loja_id = {P} AND (codigo = {P} OR produto = {P})
-    """, (quantidade, loja_id, codigo_pk, row[4]))
+        SET quant_conferida = {P}
+        WHERE loja_id = {P} AND codigo = {P}
+    """, (nova_qtd, loja_id, codigo_pk))
 
     conn.commit()
     c.close()
@@ -614,9 +623,10 @@ def bipar():
     produto_resp = {
         'descricao': row[1],
         'quant_esperada': row[2],
-        'quant_conferida': row[3] + quantidade,
+        'quant_conferida': nova_qtd,
         'produto': row[4]
     }
+
     return jsonify({'status': 'ok', 'produto': produto_resp, 'codigo_barra': row[0]})
 
 
